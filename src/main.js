@@ -32,25 +32,29 @@ const lightBoxPhotos = new SimpleLightbox('.wrap-photos a', {
 form.addEventListener('submit', event => {
   event.preventDefault();
 
-  const inputValue = document.querySelector('input').value;
+  const inputValue = document.querySelector('input').value.trim();
 
-  wrapPhotos.innerHTML = '';
-  loader.classList.remove('visually-hidden');
+  if (!inputValue) {
+    iziToast.error({ ...options });
+  } else {
+    wrapPhotos.innerHTML = '';
+    loader.classList.remove('visually-hidden');
 
-  getPhotos(inputValue)
-    .then(photos => {
-      if (!inputValue || !photos.hits.length) {
-        iziToast.error({ ...options });
-      } else {
-        wrapPhotos.innerHTML = renderPhotos(photos);
-        lightBoxPhotos.refresh();
-        showCards();
-      }
-    })
-    .catch(error => console.log(error))
-    .finally(() => {
-      loader.classList.add('visually-hidden');
-    });
+    getPhotos(inputValue)
+      .then(photos => {
+        if (!photos.hits.length) {
+          iziToast.error({ ...options });
+        } else {
+          wrapPhotos.innerHTML = renderPhotos(photos);
+          lightBoxPhotos.refresh();
+          showCards();
+        }
+      })
+      .catch(error => console.log(error))
+      .finally(() => {
+        loader.classList.add('visually-hidden');
+      });
+  }
 });
 
 function showCards() {
